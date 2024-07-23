@@ -1,6 +1,5 @@
 package com.example.backend.security.services;
 
-
 import com.example.backend.security.config.JwtService;
 import com.example.backend.security.dto.AuthRequest;
 import com.example.backend.security.dto.AuthResponse;
@@ -17,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @RequiredArgsConstructor
 @Builder
@@ -29,10 +27,20 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse authenticate(AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password())
+        );
         if (authentication.isAuthenticated()) {
+            UserInfo user = repository.findByUsername(authRequest.username())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            // Return AuthResponse with user details
             return AuthResponse.builder()
-                    .accessToken(jwtService.generateToken(authRequest.username())).build();
+                    .accessToken(jwtService.generateToken(authRequest.username()))
+                    .userId(user.getId())                          // Added line
+                    .username(user.getUsername())                  // Added line
+                    .roles(user.getRole().name())                  // Added line
+                    .build();
         } else {
             throw new UsernameNotFoundException("invalid users request..!!");
         }
@@ -50,7 +58,7 @@ public class AuthService {
 
         return authenticate(AuthRequest.builder()
                 .username(request.username())
-                .password(request.username())
+                .password(request.password())                      // Corrected from request.username() to request.password()
                 .build());
     }
 }

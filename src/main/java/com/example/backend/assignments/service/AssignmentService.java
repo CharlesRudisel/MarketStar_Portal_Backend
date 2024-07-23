@@ -14,6 +14,11 @@ public class AssignmentService {
     @Autowired
     private AssignmentRepository assignmentRepository;
 
+    public List<Assignment> getAssignmentsByUserId(Long userId) {
+        return assignmentRepository.findByUserId(userId);
+    }
+
+
     public List<Assignment> getAllAssignments() {
         return assignmentRepository.findAll();
     }
