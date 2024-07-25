@@ -1,5 +1,6 @@
 package com.example.backend.clients.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -25,7 +26,8 @@ public class Client {
     @Column(name = "selling_points")
     private String sellingPoints;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // Use this to manage the relationship
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private Set<ClientDocument> documents;
 
     // Getters and Setters
