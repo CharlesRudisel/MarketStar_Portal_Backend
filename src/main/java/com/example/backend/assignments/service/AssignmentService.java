@@ -2,6 +2,8 @@ package com.example.backend.assignments.service;
 
 import com.example.backend.assignments.entity.Assignment;
 import com.example.backend.assignments.repository.AssignmentRepository;
+import com.example.backend.users.entity.UserInfo;
+import com.example.backend.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,27 @@ public class AssignmentService {
 
     @Autowired
     private AssignmentRepository assignmentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public String updateAssignmentStatus(Long assignmentId, String status, Long userId) {
+        Optional<Assignment> assignmentOptional = assignmentRepository.findById(assignmentId);
+        Optional<UserInfo> userOptional = userRepository.findById(userId);
+
+        if (assignmentOptional.isPresent() && userOptional.isPresent()) {
+            Assignment assignment = assignmentOptional.get();
+            UserInfo user = userOptional.get();
+
+            assignment.setStatus(status);
+            assignment.setUser(user);
+
+            assignmentRepository.save(assignment);
+            return "Assignment status updated successfully";
+        } else {
+            return "Assignment or User not found";
+        }
+    }
 
     public List<Assignment> getAssignmentsByUserId(Long userId) {
         return assignmentRepository.findByUserId(userId);

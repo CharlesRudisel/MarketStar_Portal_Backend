@@ -19,6 +19,16 @@ public class AssignmentController {
     @Autowired
     private AssignmentService assignmentService;
 
+    @PutMapping("/available/{assignmentId}/status/{status}/{userId}")
+    public ResponseEntity<String> updateAssignmentStatus(@PathVariable Long assignmentId, @PathVariable String status, @PathVariable Long userId) {
+        String result = assignmentService.updateAssignmentStatus(assignmentId, status, userId);
+        if (result.equals("Assignment status updated successfully")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Assignment>> getAssignmentsByUserId(@PathVariable Long userId) {
